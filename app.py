@@ -239,7 +239,10 @@ page = st.sidebar.selectbox(
 )
 
 # Page 1: Model Information  
-if rf_model is not None:
+if page == "Model Information":
+    st.markdown('<h2 class="section-header">Trained Model Information</h2>', unsafe_allow_html=True)
+    
+    if rf_model is not None:
         # Model Details
         st.markdown('<h3 class="section-header">Trained Model Information</h3>', unsafe_allow_html=True)
         col1, col2 = st.columns(2)
@@ -334,7 +337,7 @@ if rf_model is not None:
                 **{'text-align': 'left'}
             )
             st.dataframe(display_features, use_container_width=True)
-else:
+    else:
         st.error("Model not available. Please check if trained_model_data.pkl exists.")
 
 # Page 2: Make Predictions
