@@ -18,7 +18,7 @@ st.set_page_config(
     initial_sidebar_state="expanded"
 )
 
-# Custom CSS for Colorado Mesa University maroon theme - EXACT COPY FROM ORIGINAL
+# Custom CSS for Colorado Mesa University maroon theme
 st.markdown("""
 <style>
     .main-header {
@@ -183,25 +183,31 @@ def load_trained_model():
             'importance': rf_model.feature_importances_
         }).sort_values('importance', ascending=False)
         
-        # Calculate correlation for direction
+        # Calculate correlation for direction (with NaN handling)
         feature_correlations = []
         for feature in feature_importance['feature']:
-            correlation = X[feature].corr(y)
-            feature_correlations.append(correlation)
+            try:
+                correlation = X[feature].corr(y)
+                # Handle NaN correlations (constant features)
+                if pd.isna(correlation):
+                    correlation = 0.0
+                feature_correlations.append(correlation)
+            except:
+                feature_correlations.append(0.0)
         
         feature_importance['correlation'] = feature_correlations
-        feature_importance['effect'] = ['Positive' if corr > 0 else 'Negative' for corr in feature_correlations]
+        feature_importance['effect'] = ['Positive' if corr > 0 else 'Negative' if corr < 0 else 'Neutral' for corr in feature_correlations]
         
         return rf_model, training_features, feature_importance, X, y
         
     except FileNotFoundError:
-        st.error("❌ Model file not found! Make sure trained_model_data.pkl is in the same directory.")
+        st.error("Model file not found! Make sure trained_model_data.pkl is in the same directory.")
         return None, [], pd.DataFrame(), None, None
 
 # Header
 st.markdown("""
 <div class="main-header">
-    <h1>🏫 Student Housing Needs Prediction System </h1>
+    <h1>Student Housing Needs Prediction System</h1>
     <p>Continuing Students</p>
 </div>
 """, unsafe_allow_html=True)
@@ -218,13 +224,13 @@ page = st.sidebar.selectbox(
     ["Model Information", "Make Predictions"]
 )
 
-# Page 1: Model Information
-if page == "📊 Model Information":
-    st.markdown('<h2 class="section-header">📊 Trained Model Information</h2>', unsafe_allow_html=True)
+# Page 1: Model Information - FIXED CONDITIONAL
+if page == "Model Information":
+    st.markdown('<h2 class="section-header">Trained Model Information</h2>', unsafe_allow_html=True)
     
     if rf_model is not None:
         # Model Details
-        st.markdown('<h3 class="section-header">🔧 Model Configuration</h3>', unsafe_allow_html=True)
+        st.markdown('<h3 class="section-header">Model Configuration</h3>', unsafe_allow_html=True)
         col1, col2 = st.columns(2)
         with col1:
             st.info("**Model Type:** Random Forest (No Class Balancing)")
@@ -236,7 +242,7 @@ if page == "📊 Model Information":
             st.info("**Training Approach:** Unbalanced (Natural Learning)")
         
         # Detailed Classification Report
-        st.markdown('<h3 class="section-header">📋 Detailed Classification Report</h3>', unsafe_allow_html=True)
+        st.markdown('<h3 class="section-header">Detailed Classification Report</h3>', unsafe_allow_html=True)
         
         # Create classification report data
         classification_data = {
@@ -276,7 +282,7 @@ if page == "📊 Model Information":
             st.metric("Housing Class Recall", "60%", help="Percentage of actual housing cases correctly identified")
         
         # Top 15 Feature Importance Chart
-        st.markdown('<h3 class="section-header">📈 Top 15 Most Important Features</h3>', unsafe_allow_html=True)
+        st.markdown('<h3 class="section-header">Top 15 Most Important Features</h3>', unsafe_allow_html=True)
         
         if not feature_importance.empty:
             top_15_features = feature_importance.head(15)
@@ -288,13 +294,19 @@ if page == "📊 Model Information":
             bars = ax.barh(range(len(top_15_features)), top_15_features['importance'], 
                           color='#800020', alpha=0.8, edgecolor='#600018', linewidth=1)
             
-            # Add +/- labels
+            # Add +/- labels (with safety check for NaN correlations)
             for i, (importance, effect, corr) in enumerate(zip(top_15_features['importance'], 
                                                                top_15_features['effect'], 
                                                                top_15_features['correlation'])):
-                sign = '+' if corr > 0 else '-'
+                if pd.isna(corr) or corr == 0:
+                    sign = '='
+                    color = '#808080'
+                else:
+                    sign = '+' if corr > 0 else '-'
+                    color = '#006400' if corr > 0 else '#8B0000'
+                
                 ax.text(importance + max(top_15_features['importance']) * 0.01, i, f'{sign}', 
-                       fontweight='bold', color='#006400' if corr > 0 else '#8B0000', fontsize=12)
+                       fontweight='bold', color=color, fontsize=12)
             
             ax.set_yticks(range(len(top_15_features)))
             ax.set_yticklabels(top_15_features['feature'], fontsize=10)
@@ -313,24 +325,24 @@ if page == "📊 Model Information":
             st.pyplot(fig)
             
             # Feature importance table
-            st.markdown('<h3 class="section-header">📋 Feature Importance Details</h3>', unsafe_allow_html=True)
+            st.markdown('<h3 class="section-header">Feature Importance Details</h3>', unsafe_allow_html=True)
             display_features = top_15_features[['feature', 'importance', 'effect']].copy()
             display_features['importance'] = display_features['importance'].round(4)
             display_features.index = range(1, len(display_features) + 1)
             display_features.columns = ['Feature Name', 'Importance Score', 'Effect Direction']
             st.dataframe(display_features, use_container_width=True)
     else:
-        st.error("❌ Model not available. Please check if trained_model_data.pkl exists.")
+        st.error("Model not available. Please check if trained_model_data.pkl exists.")
 
-# Page 2: Make Predictions  
-elif page == "🔮 Make Predictions":
+# Page 2: Make Predictions - FIXED CONDITIONAL
+elif page == "Make Predictions":
     
     if rf_model is not None:
-        st.success("✅ CMU Housing Prediction Model is ready")
+        st.success("CMU Housing Prediction Model is ready")
         
         # Upload prediction data
         prediction_file = st.file_uploader(
-            "📁 Upload Student Data (CSV Format)", 
+            "Upload Student Data (CSV Format)", 
             type=['csv']
         )
         
@@ -338,17 +350,17 @@ elif page == "🔮 Make Predictions":
             # Read CSV and force TermPIDMKey to be string
             df_new = pd.read_csv(prediction_file, dtype={'TermPIDMKey': str})
             
-            st.success(f"✅ File uploaded: **{df_new.shape[0]:,}** students, **{df_new.shape[1]}** features")
+            st.success(f"File uploaded: **{df_new.shape[0]:,}** students, **{df_new.shape[1]}** features")
             
-            with st.expander("👀 Preview Data"):
+            with st.expander("Preview Data"):
                 st.dataframe(df_new.head())
             
             if 'TermPIDMKey' not in df_new.columns:
-                st.error("❌ Missing required column: **TermPIDMKey**")
+                st.error("Missing required column: **TermPIDMKey**")
             else:
-                if st.button("🎯 Run Predictions", type="primary", use_container_width=True):
+                if st.button("Run Predictions", type="primary", use_container_width=True):
                     
-                    with st.spinner("🔄 Making predictions..."):
+                    with st.spinner("Making predictions..."):
                         
                         # Prepare features with proper TermPIDMKey handling
                         def convert_scientific_to_full(value):
@@ -376,10 +388,10 @@ elif page == "🔮 Make Predictions":
                             extra = prediction_features_set - training_features_set
                             
                             if missing:
-                                st.error(f"❌ Missing features: {list(missing)}")
+                                st.error(f"Missing features: {list(missing)}")
                                 st.stop()
                             if extra:
-                                st.warning(f"⚠️ Removing extra features: {list(extra)}")
+                                st.warning(f"Removing extra features: {list(extra)}")
                                 X_new = X_new[training_features]
                         
                         # Make predictions
@@ -388,7 +400,7 @@ elif page == "🔮 Make Predictions":
                         
                         # Create results dataframe with properly formatted TermPIDMKey
                         results_df = pd.DataFrame({
-                            'TermPIDMKey': id_column,  # Already converted to string above
+                            'TermPIDMKey': id_column,
                             'Predicted_Has_Future_Housing': predictions,
                             'Probability_Has_Housing': probabilities[:, 1].round(4)
                         })
@@ -396,7 +408,7 @@ elif page == "🔮 Make Predictions":
                         # Ensure TermPIDMKey stays as string in results
                         results_df['TermPIDMKey'] = results_df['TermPIDMKey'].astype(str)
                     
-                    st.success("✅ Predictions completed!")
+                    st.success("Predictions completed!")
                     
                     # Summary
                     col1, col2, col3, col4 = st.columns(4)
@@ -411,11 +423,10 @@ elif page == "🔮 Make Predictions":
                         st.metric("Housing Rate", f"{predictions.mean():.1%}")
                     
                     # Sample results
-                    st.subheader("📋 Sample Results")
+                    st.subheader("Sample Results")
                     sample = results_df.head(10).copy()
-                    # Ensure TermPIDMKey displays properly without scientific notation
                     sample['TermPIDMKey'] = sample['TermPIDMKey'].astype(str)
-                    sample['Status'] = sample['Predicted_Has_Future_Housing'].map({1: '🏠 Yes', 0: '❌ No'})
+                    sample['Status'] = sample['Predicted_Has_Future_Housing'].map({1: 'Yes', 0: 'No'})
                     display_sample = sample[['TermPIDMKey', 'Status', 'Probability_Has_Housing']].copy()
                     display_sample.columns = ['Student ID', 'Needs Housing', 'Probability']
                     
@@ -433,7 +444,7 @@ elif page == "🔮 Make Predictions":
                     csv = csv_buffer.getvalue()
                     
                     st.download_button(
-                        "💾 Download Full Results",
+                        "Download Full Results",
                         csv,
                         f"CMU_housing_predictions_{pd.Timestamp.now().strftime('%Y%m%d_%H%M%S')}.csv",
                         "text/csv",
@@ -441,14 +452,14 @@ elif page == "🔮 Make Predictions":
                     )
                     
         else:
-            st.info("👆 Upload a CSV file to make predictions")
+            st.info("Upload a CSV file to make predictions")
     else:
-        st.error("❌ Model not available")
+        st.error("Model not available")
 
 # Sidebar
 st.sidebar.markdown("---")
 if rf_model is not None:
-    st.sidebar.success("✅ Model Ready")
-    st.sidebar.info(f"📊 Features: {len(training_features)}")
+    st.sidebar.success("Model Ready")
+    st.sidebar.info(f"Features: {len(training_features)}")
 else:
-    st.sidebar.error("❌ Model Not Available")
+    st.sidebar.error("Model Not Available")
