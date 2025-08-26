@@ -241,44 +241,56 @@ page = st.sidebar.selectbox(
 # Page 1: About
 if page == "About":
     st.markdown('<h2 class="section-header">About</h2>', unsafe_allow_html=True)
-    st.markdown("""
-    This Streamlit application predicts whether continuing students will need university housing based on historical data from 2018-2023.
+    st.markdown("This Streamlit application predicts whether continuing students will need university housing based on historical data from 2018-2023.")
 
-    ### 🚀 Features
-    - **Model Information**: View Random Forest model details and feature importance  
-    - **Predictions**: Upload student features and get housing predictions  
-    - **Interactive Dashboard**: Clean, university-branded interface  
-    - **Export Results**: Download predictions as CSV  
+    # Split into 2 columns
+    col1, col2 = st.columns(2)
 
-    ### 🔧 Model Details
-    - **Algorithm**: Random Forest Classifier  
-    - **Training Period**: 2018-2023 CMU student features  
-    - **Accuracy**: ~90%  
-    - **Features**: Academic, demographic, and enrollment variables  
+    with col1:
+        st.markdown("### 🚀 Features")
+        st.markdown("""
+        - **Model Information**: View Random Forest model details and feature importance  
+        - **Predictions**: Upload student features and get housing predictions  
+        - **Interactive Dashboard**: Clean, university-branded interface  
+        - **Export Results**: Download predictions as CSV  
+        """)
 
-    ### 📱 How to Use
-    - Navigate to the **Model Information** section to understand the model  
-    - Go to **Make Predictions** to upload student features  
-    - Upload a CSV file with student features (must include `TermPIDMKey`)  
-    - Click **Run Predictions** to get results  
-    - Download the predictions as CSV  
+        st.markdown("### 📱 How to Use")
+        st.markdown("""
+        - Navigate to the **Model Information** section to understand the model  
+        - Go to **Make Predictions** to upload student features  
+        - Upload a CSV file with student features (must include `TermPIDMKey`)  
+        - Click **Run Predictions** to get results  
+        - Download the predictions as CSV  
+        """)
 
-    ### 📋 Required Data Format
-    Your CSV file must contain:  
-    - **TermPIDMKey**: Student identifier  
-    - All training features used in the model  
-    - No missing required columns  
+    with col2:
+        st.markdown("### 🔧 Model Details")
+        st.markdown("""
+        - **Algorithm**: Random Forest Classifier  
+        - **Training Period**: 2018-2023 CMU student features  
+        - **Accuracy**: ~90%  
+        - **Features**: Academic, demographic, and enrollment variables  
+        """)
 
-    ### 🛠️ Technical Stack
-    - **Frontend**: Streamlit  
-    - **ML Library**: scikit-learn  
-    - **Data Processing**: pandas, numpy  
-    - **Visualization**: matplotlib, seaborn  
+        st.markdown("### 📋 Required Data Format")
+        st.markdown("""
+        Your CSV file must contain:  
+        - **TermPIDMKey**: Student identifier  
+        - All training features used in the model  
+        - No missing required columns  
+        """)
 
-    ---
-    **Created:** 2025-08-26 Colorado Mesa University - Institutional Research
-    """)
+        st.markdown("### 🛠️ Technical Stack")
+        st.markdown("""
+        - **Frontend**: Streamlit  
+        - **ML Library**: scikit-learn  
+        - **Data Processing**: pandas, numpy  
+        - **Visualization**: matplotlib, seaborn  
+        """)
 
+    st.markdown("---")
+    st.markdown("**Created:** 2025-08-26 Colorado Mesa University - Institutional Research")
 
 # Page 1: Model Information  
 elif page == "Model Information":
