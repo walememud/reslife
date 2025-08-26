@@ -2,24 +2,23 @@ import streamlit as st
 import pandas as pd
 import numpy as np
 import pickle
-import gzip
-import joblib
+from sklearn.metrics import accuracy_score, precision_score, recall_score, f1_score, roc_auc_score
 import matplotlib.pyplot as plt
 import seaborn as sns
 import io
-from sklearn.ensemble import RandomForestClassifier
 
-# Set pandas options
+# Set pandas options to prevent scientific notation
 pd.set_option('display.float_format', '{:.0f}'.format)
+pd.set_option('display.max_columns', None)
+pd.set_option('display.precision', 0)
 
 st.set_page_config(
     page_title="CMU Housing Prediction", 
-    page_icon="🏫", 
     layout="wide",
     initial_sidebar_state="expanded"
 )
 
-# Custom CSS for Colorado Mesa University maroon theme
+# Custom CSS for Colorado Mesa University maroon theme - EXACT COPY FROM ORIGINAL
 st.markdown("""
 <style>
     .main-header {
@@ -165,76 +164,58 @@ st.markdown("""
 </style>
 """, unsafe_allow_html=True)
 
-# Load model function
+# Load trained model
 @st.cache_resource
 def load_trained_model():
     """Load the pre-trained Random Forest model"""
     try:
-        # Try main file first
         with open('trained_model_data.pkl', 'rb') as f:
             data = pickle.load(f)
-        source = "main"
+        
+        rf_model = data['rf_model']
+        training_features = data['training_features']
+        X = data['X']
+        y = data['y']
+        
+        # Feature importance
+        feature_importance = pd.DataFrame({
+            'feature': X.columns,
+            'importance': rf_model.feature_importances_
+        }).sort_values('importance', ascending=False)
+        
+        # Calculate correlation for direction
+        feature_correlations = []
+        for feature in feature_importance['feature']:
+            correlation = X[feature].corr(y)
+            feature_correlations.append(correlation)
+        
+        feature_importance['correlation'] = feature_correlations
+        feature_importance['effect'] = ['Positive' if corr > 0 else 'Negative' for corr in feature_correlations]
+        
+        return rf_model, training_features, feature_importance, X, y
+        
     except FileNotFoundError:
-        try:
-            # Try compressed file
-            with gzip.open('trained_model_data.pkl.gz', 'rb') as f:
-                data = joblib.load(f)
-            source = "compressed"
-        except FileNotFoundError:
-            st.error("❌ Model files not found!")
-            return None, [], pd.DataFrame(), None, None
-    
-    rf_model = data['rf_model']
-    training_features = data['training_features']
-    X = data['X']
-    y = data['y']
-    
-    # Feature importance
-    feature_importance = pd.DataFrame({
-        'feature': X.columns,
-        'importance': rf_model.feature_importances_
-    }).sort_values('importance', ascending=False)
-    
-    # Calculate correlation for direction
-    feature_correlations = []
-    for feature in feature_importance['feature']:
-        correlation = X[feature].corr(y)
-        feature_correlations.append(correlation)
-    
-    feature_importance['correlation'] = feature_correlations
-    feature_importance['effect'] = ['Positive' if corr > 0 else 'Negative' for corr in feature_correlations]
-    
-    st.success(f"✅ Model loaded from {source} file")
-    
-    return rf_model, training_features, feature_importance, X, y
+        st.error("❌ Model file not found! Make sure trained_model_data.pkl is in the same directory.")
+        return None, [], pd.DataFrame(), None, None
 
 # Header
 st.markdown("""
 <div class="main-header">
-    <h1>🏫 Colorado Mesa University</h1>
-    <p>Student Housing Needs Prediction System</p>
-</div>
-""", unsafe_allow_html=True)
-
-st.markdown("""
-<div class="navbar">
-    <div class="navbar-brand">
-        🏠 CMU Housing Analytics Dashboard (Continuing Students)
-    </div>
+    <h1>🏫 Student Housing Needs Prediction System </h1>
+    <p>Continuing Students</p>
 </div>
 """, unsafe_allow_html=True)
 
 # Load model and data
 rf_model, training_features, feature_importance, X, y = load_trained_model()
 
-# Sidebar
-st.sidebar.markdown("### 🏫 Colorado Mesa University")
-st.sidebar.markdown("**Housing Prediction System**")
+# Sidebar Navigation
+st.sidebar.markdown("### Colorado Mesa University")
 st.sidebar.markdown("---")
 
 page = st.sidebar.selectbox(
     "Choose a section", 
-    ["📊 Model Information", "🔮 Make Predictions"]
+    ["Model Information", "Make Predictions"]
 )
 
 # Page 1: Model Information
@@ -298,25 +279,25 @@ if page == "📊 Model Information":
         st.markdown('<h3 class="section-header">📈 Top 15 Most Important Features</h3>', unsafe_allow_html=True)
         
         if not feature_importance.empty:
-            top_15 = feature_importance.head(15)
+            top_15_features = feature_importance.head(15)
             
             # Create horizontal bar chart
             fig, ax = plt.subplots(figsize=(12, 8))
             fig.patch.set_facecolor('white')
             
-            bars = ax.barh(range(len(top_15)), top_15['importance'], 
+            bars = ax.barh(range(len(top_15_features)), top_15_features['importance'], 
                           color='#800020', alpha=0.8, edgecolor='#600018', linewidth=1)
             
             # Add +/- labels
-            for i, (importance, effect, corr) in enumerate(zip(top_15['importance'], 
-                                                               top_15['effect'], 
-                                                               top_15['correlation'])):
+            for i, (importance, effect, corr) in enumerate(zip(top_15_features['importance'], 
+                                                               top_15_features['effect'], 
+                                                               top_15_features['correlation'])):
                 sign = '+' if corr > 0 else '-'
-                ax.text(importance + max(top_15['importance']) * 0.01, i, f'{sign}', 
+                ax.text(importance + max(top_15_features['importance']) * 0.01, i, f'{sign}', 
                        fontweight='bold', color='#006400' if corr > 0 else '#8B0000', fontsize=12)
             
-            ax.set_yticks(range(len(top_15)))
-            ax.set_yticklabels(top_15['feature'], fontsize=10)
+            ax.set_yticks(range(len(top_15_features)))
+            ax.set_yticklabels(top_15_features['feature'], fontsize=10)
             ax.set_xlabel('Feature Importance', fontsize=12, fontweight='bold', color='#800020')
             ax.set_title('Top 15 Most Important Features for Housing Prediction', 
                         fontsize=14, fontweight='bold', color='#800020', pad=20)
@@ -333,15 +314,16 @@ if page == "📊 Model Information":
             
             # Feature importance table
             st.markdown('<h3 class="section-header">📋 Feature Importance Details</h3>', unsafe_allow_html=True)
-            display_features = top_15[['feature', 'importance', 'effect']].copy()
+            display_features = top_15_features[['feature', 'importance', 'effect']].copy()
             display_features['importance'] = display_features['importance'].round(4)
             display_features.index = range(1, len(display_features) + 1)
             display_features.columns = ['Feature Name', 'Importance Score', 'Effect Direction']
             st.dataframe(display_features, use_container_width=True)
+    else:
+        st.error("❌ Model not available. Please check if trained_model_data.pkl exists.")
 
 # Page 2: Make Predictions  
 elif page == "🔮 Make Predictions":
-    st.markdown('<h2 class="section-header">🔮 Make Housing Predictions</h2>', unsafe_allow_html=True)
     
     if rf_model is not None:
         st.success("✅ CMU Housing Prediction Model is ready")
@@ -463,7 +445,7 @@ elif page == "🔮 Make Predictions":
     else:
         st.error("❌ Model not available")
 
-# Sidebar status
+# Sidebar
 st.sidebar.markdown("---")
 if rf_model is not None:
     st.sidebar.success("✅ Model Ready")
