@@ -210,9 +210,9 @@ st.markdown("""
 </div>
 """, unsafe_allow_html=True)
 
-col1, col2, col3 = st.columns([1, 1, 1])
-with col2:
-    st.image("Picture2.png", width=400)  # This will actually be larger
+#col1, col2, col3 = st.columns([1, 1, 1])
+#with col2:
+  #  st.image("Picture2.png", width=400)  # This will actually be larger
     
 st.markdown("""
 <div class="main-header">
