@@ -204,16 +204,12 @@ def load_trained_model():
         st.error("Model file not found! Make sure trained_model_data.pkl is in the same directory.")
         return None, [], pd.DataFrame(), None, None
 
-# Header - logo and title side by side (equal spacing)
+# Header - logo and title side by side
 st.markdown("""
 <div style='margin-top: -100px; margin-bottom: -20px;'>
 </div>
 """, unsafe_allow_html=True)
 
-#col1, col2, col3 = st.columns([1, 1, 1])
-#with col2:
-  #  st.image("Picture2.png", width=400)  # This will actually be larger
-    
 st.markdown("""
 <div class="main-header">
     <h1>Student Housing Needs Prediction System</h1>
@@ -221,12 +217,10 @@ st.markdown("""
 </div>
 """, unsafe_allow_html=True)
 
-
-
 # Load model and data
 rf_model, training_features, feature_importance, X, y = load_trained_model()
 
-# Sidebar Navigation - centered and bigger logo
+# Sidebar Navigation
 col1, col2, col3 = st.sidebar.columns([1, 2, 1])
 with col2:
     st.image("Picture1.png", use_container_width=True)
@@ -254,11 +248,32 @@ if page == "Model Information":
             st.info("**Number of Trees:** 100")
             st.info("**Max Depth:** 10")
             st.info("**Training Approach:** Unbalanced (Natural Learning)")
-        
+
+        # 📌 ADDITION: About / How to Use / Required Data Format / Created
+        st.markdown("""
+        ### About
+        This Streamlit application predicts whether continuing students will need university housing based on historical data from 2018-2023.
+
+        ### How to Use
+        - Navigate to the **Model Information** section to understand the model  
+        - Go to **Make Predictions** to upload student data  
+        - Upload a CSV file with student data (must include `TermPIDMKey`)  
+        - Click **Run Predictions** to get results  
+        - Download the predictions as CSV  
+
+        ### Required Data Format
+        Your CSV file must contain:  
+        - **TermPIDMKey**: Student identifier  
+        - All training features used in the model  
+        - No missing required columns  
+
+        ---
+        **Created:** 2025-08-26 Colorado Mesa University - Institutional Research
+        """)
+
         # Detailed Classification Report
         st.markdown('<h3 class="section-header">Detailed Classification Report</h3>', unsafe_allow_html=True)
         
-        # Create classification report data
         classification_data = {
             'Class': ['No Future Housing', 'Has Future Housing', '', 'Accuracy', 'Macro Avg', 'Weighted Avg'],
             'Precision': ['0.93', '0.66', '', '', '0.80', '0.90'],
@@ -269,7 +284,6 @@ if page == "Model Information":
         
         classification_df = pd.DataFrame(classification_data)
         
-        # Style the dataframe
         def style_classification_report(row):
             if row.name == 2:  # Empty row
                 return ['background-color: transparent'] * len(row)
@@ -283,10 +297,8 @@ if page == "Model Information":
                 return [''] * len(row)
         
         styled_df = classification_df.style.apply(style_classification_report, axis=1)
-        
         st.dataframe(styled_df, use_container_width=True, hide_index=True)
         
-        # Key insights from classification report
         col1, col2, col3 = st.columns(3)
         with col1:
             st.metric("Overall Accuracy", "90.0%", help="Correct predictions out of all predictions")
@@ -295,13 +307,12 @@ if page == "Model Information":
         with col3:
             st.metric("Housing Class Recall", "60%", help="Percentage of actual housing cases correctly identified")
         
-        # Top 15 Feature Importance Chart
+        # Feature Importance Chart
         st.markdown('<h3 class="section-header">Top 15 Most Important Features</h3>', unsafe_allow_html=True)
         
         if not feature_importance.empty:
             top_15_features = feature_importance.head(15)
             
-            # Create horizontal bar chart
             fig, ax = plt.subplots(figsize=(12, 8))
             fig.patch.set_facecolor('white')
             
@@ -324,36 +335,23 @@ if page == "Model Information":
             
             st.pyplot(fig)
             
-            # Feature importance table
             st.markdown('<h3 class="section-header">Feature Importance Details</h3>', unsafe_allow_html=True)
             display_features = top_15_features[['feature', 'importance']].copy()
             display_features['importance'] = display_features['importance'].round(4)
             display_features.index = range(1, len(display_features) + 1)
             display_features.columns = ['Feature Name', 'Importance Score']
-
-            # Style the dataframe to left-align the importance score column
-            styled_features = display_features.style.set_properties(
-                subset=['Importance Score'], 
-                **{'text-align': 'left'}
-            )
             st.dataframe(display_features, use_container_width=True)
     else:
         st.error("Model not available. Please check if trained_model_data.pkl exists.")
 
 # Page 2: Make Predictions
 elif page == "Make Predictions":
-    
     if rf_model is not None:
         st.success("CMU Housing Prediction Model is ready")
         
-        # Upload prediction data
-        prediction_file = st.file_uploader(
-            "Upload Student Data (CSV Format)", 
-            type=['csv']
-        )
+        prediction_file = st.file_uploader("Upload Student Data (CSV Format)", type=['csv'])
         
         if prediction_file is not None:
-            # Read CSV and force TermPIDMKey to be string
             df_new = pd.read_csv(prediction_file, dtype={'TermPIDMKey': str})
             
             st.success(f"File uploaded: **{df_new.shape[0]:,}** students, **{df_new.shape[1]}** features")
@@ -365,10 +363,7 @@ elif page == "Make Predictions":
                 st.error("Missing required column: **TermPIDMKey**")
             else:
                 if st.button("Run Predictions", type="primary", use_container_width=True):
-                    
                     with st.spinner("Making predictions..."):
-                        
-                        # Prepare features with proper TermPIDMKey handling
                         def convert_scientific_to_full(value):
                             try:
                                 if isinstance(value, str):
@@ -385,7 +380,6 @@ elif page == "Make Predictions":
                         id_column = df_new['TermPIDMKey'].apply(convert_scientific_to_full)
                         X_new = df_new.drop('TermPIDMKey', axis=1)
                         
-                        # Check features
                         training_features_set = set(training_features)
                         prediction_features_set = set(X_new.columns)
                         
@@ -400,23 +394,18 @@ elif page == "Make Predictions":
                                 st.warning(f"Removing extra features: {list(extra)}")
                                 X_new = X_new[training_features]
                         
-                        # Make predictions
                         predictions = rf_model.predict(X_new)
                         probabilities = rf_model.predict_proba(X_new)
                         
-                        # Create results dataframe with properly formatted TermPIDMKey
                         results_df = pd.DataFrame({
                             'TermPIDMKey': id_column,
                             'Predicted_Has_Future_Housing': predictions,
                             'Probability_Has_Housing': probabilities[:, 1].round(4)
                         })
-                        
-                        # Ensure TermPIDMKey stays as string in results
                         results_df['TermPIDMKey'] = results_df['TermPIDMKey'].astype(str)
                     
                     st.success("Predictions completed!")
                     
-                    # Summary
                     col1, col2, col3, col4 = st.columns(4)
                     has_housing = int(predictions.sum())
                     with col1:
@@ -428,23 +417,16 @@ elif page == "Make Predictions":
                     with col4:
                         st.metric("Housing Rate", f"{predictions.mean():.1%}")
                     
-                    # Sample results
                     st.subheader("Sample Results")
                     sample = results_df.head(10).copy()
-                    sample['TermPIDMKey'] = sample['TermPIDMKey'].astype(str)
                     sample['Status'] = sample['Predicted_Has_Future_Housing'].map({1: 'Yes', 0: 'No'})
                     display_sample = sample[['TermPIDMKey', 'Status', 'Probability_Has_Housing']].copy()
                     display_sample.columns = ['Student ID', 'Needs Housing', 'Probability']
-                    
-                    # Format the display to prevent scientific notation
                     styled_sample = display_sample.style.format({'Student ID': lambda x: f"{x}"})
                     st.dataframe(styled_sample, use_container_width=True, hide_index=True)
                     
-                    # Download - ensure proper string formatting in CSV
                     csv_results = results_df.copy()
                     csv_results['TermPIDMKey'] = csv_results['TermPIDMKey'].astype(str)
-                    
-                    # Create CSV without float formatting to preserve probability decimals
                     csv_buffer = io.StringIO()
                     csv_results.to_csv(csv_buffer, index=False)
                     csv = csv_buffer.getvalue()
@@ -456,15 +438,7 @@ elif page == "Make Predictions":
                         "text/csv",
                         use_container_width=True
                     )
-                    
         else:
             st.info("Upload a CSV file to make predictions")
     else:
         st.error("Model not available")
-
-# Sidebar
-#st.sidebar.markdown("---")
-#if rf_model is not None:
-    #st.sidebar.info(f"Designed by: IR Team")
-#else:
-  #  st.sidebar.error("Model Not Available")
