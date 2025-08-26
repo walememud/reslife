@@ -216,7 +216,18 @@ st.markdown("""
 rf_model, training_features, feature_importance, X, y = load_trained_model()
 
 # Sidebar Navigation
-st.sidebar.markdown("### Colorado Mesa University")
+# Add the logo image above the university name
+st.sidebar.image("Picture1.png", width=200)
+
+# Larger, centered Colorado Mesa University text
+st.sidebar.markdown("""
+<div style='text-align: center; margin: 20px 0;'>
+    <h2 style='color: #FFD700; font-size: 24px; font-weight: bold; margin: 0;'>
+        Colorado Mesa University
+    </h2>
+</div>
+""", unsafe_allow_html=True)
+
 st.sidebar.markdown("---")
 
 page = st.sidebar.selectbox(
@@ -316,6 +327,12 @@ if page == "Model Information":
             display_features['importance'] = display_features['importance'].round(4)
             display_features.index = range(1, len(display_features) + 1)
             display_features.columns = ['Feature Name', 'Importance Score']
+
+            # Style the dataframe to left-align the importance score column
+            styled_features = display_features.style.set_properties(
+                subset=['Importance Score'], 
+                **{'text-align': 'left'}
+            )
             st.dataframe(display_features, use_container_width=True)
     else:
         st.error("Model not available. Please check if trained_model_data.pkl exists.")
