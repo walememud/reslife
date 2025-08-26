@@ -216,17 +216,12 @@ st.markdown("""
 rf_model, training_features, feature_importance, X, y = load_trained_model()
 
 # Sidebar Navigation
-# Add the logo image above the university name
-st.sidebar.image("Picture1.png", width=200)
-
-# Larger, centered Colorado Mesa University text
+# Sidebar Navigation - centered logo with HTML
 st.sidebar.markdown("""
-<div style='text-align: center; margin: 20px 0;'>
-    <h2 style='color: #FFD700; font-size: 24px; font-weight: bold; margin: 0;'>
-        Colorado Mesa University
-    </h2>
+<div style='display: flex; justify-content: center; margin: 20px 0;'>
+    <img src="data:image/png;base64,{}" width="200">
 </div>
-""", unsafe_allow_html=True)
+""".format(base64.b64encode(open("Picture1.png", "rb").read()).decode()), unsafe_allow_html=True)
 
 st.sidebar.markdown("---")
 
