@@ -282,7 +282,7 @@ if page == "About":
         """)
 
     st.markdown("---")
-    st.markdown("**Created:** 2025-08-26 Colorado Mesa University - Institutional Research")
+    st.markdown("**Version 1:** 2025-08-26            Colorado Mesa University - Institutional Research")
 
 # Page 1: Model Information  
 elif page == "Model Information":
