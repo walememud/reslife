@@ -465,7 +465,6 @@ elif page == "Make Predictions":
 # Sidebar
 st.sidebar.markdown("---")
 if rf_model is not None:
-    st.sidebar.success("Model Ready")
     st.sidebar.info(f"Features: {len(training_features)}")
 else:
     st.sidebar.error("Model Not Available")
