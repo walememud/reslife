@@ -241,8 +241,9 @@ page = st.sidebar.selectbox(
 # Page 1: About
 if page == "About":
     st.markdown('<h2 class="section-header">About</h2>', unsafe_allow_html=True)
-    st.markdown("This Streamlit application predicts whether continuing students will need university housing based on historical data from 2018-2023.")
-
+    st.markdown("""This Streamlit application predicts whether continuing students will need university housing based on historical data from 2018–2023.  
+    The dataset ends at 2023 due to a change in university housing policy that affected eligibility for future housing.
+    """)
     # Split into 2 columns
     col1, col2 = st.columns(2)
 
