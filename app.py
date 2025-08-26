@@ -206,7 +206,7 @@ def load_trained_model():
 
 # Header - logo and title side by side (equal spacing)
 st.markdown("""
-<div style='margin-top: -50px; margin-bottom: -20px;'>
+<div style='margin-top: -100px; margin-bottom: -20px;'>
 </div>
 """, unsafe_allow_html=True)
 
@@ -217,15 +217,10 @@ with col2:
 st.markdown("""
 <div class="main-header">
     <h1>Student Housing Needs Prediction System</h1>
-    <p>Continuing Students</p>
+     <p style="font-size:200%;">Continuing Students</p>
 </div>
 """, unsafe_allow_html=True)
-st.markdown("""
-    <div class="main-header" style='margin-top: 30px;'>
-        <h1 style='text-align: left;'>Student Housing Needs Prediction System</h1>
-        <p style='text-align: left;'>Continuing Students</p>
-    </div>
-    """, unsafe_allow_html=True)
+
 
 
 # Load model and data
