@@ -249,9 +249,8 @@ if page == "About":
     with col1:
         st.markdown("### 🚀 Features")
         st.markdown("""
-        - **Model Information**: View Random Forest model details and feature importance  
-        - **Predictions**: Upload student features and get housing predictions  
-        - **Interactive Dashboard**: Clean, university-branded interface  
+        - **Model Information**: View machine learning model details and feature importance  
+        - **Predictions**: Upload student features and get housing predictions   
         - **Export Results**: Download predictions as CSV  
         """)
 
