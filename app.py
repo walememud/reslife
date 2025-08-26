@@ -238,13 +238,10 @@ page = st.sidebar.selectbox(
     ["Model Information", "Make Predictions"]
 )
 
-# Page 1: Model Information
-if page == "Model Information":
-    st.markdown('<h2 class="section-header">Trained Model Information</h2>', unsafe_allow_html=True)
-    
+# Page 1: Model Information  
     if rf_model is not None:
         # Model Details
-        st.markdown('<h3 class="section-header">Model Configuration</h3>', unsafe_allow_html=True)
+        st.markdown('<h3 class="section-header">Trained Model Information</h3>', unsafe_allow_html=True)
         col1, col2 = st.columns(2)
         with col1:
             st.info("**Model Type:** Random Forest")
