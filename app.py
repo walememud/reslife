@@ -204,23 +204,23 @@ def load_trained_model():
         st.error("Model file not found! Make sure trained_model_data.pkl is in the same directory.")
         return None, [], pd.DataFrame(), None, None
 
-# Header
-# Header - logo and title side by side (equal spacing)
+# Header - logo and title side by side at very top
 st.markdown("""
-<div style='margin-top: -50px; margin-bottom: -20px;'>
+<div style='margin-top: -80px; margin-bottom: -30px;'>
 </div>
 """, unsafe_allow_html=True)
 
-col1, col2 = st.columns([1, 2])
+col1, col2 = st.columns([1, 3])  # Logo gets 1/4, title gets 3/4 of width
 with col1:
-    st.image("Picture2.png", width=250)
+    st.image("Picture2.png", width=200)
 with col2:
     st.markdown("""
-    <div class="main-header" style='margin-top: 30px;'>
-        <h1 style='text-align: left;'>Student Housing Needs Prediction System</h1>
-        <p style='text-align: left;'>Continuing Students</p>
+    <div class="main-header" style='margin-top: 0px; margin-left: -20px;'>
+        <h1>Student Housing Needs Prediction System</h1>
+        <p>Continuing Students</p>
     </div>
     """, unsafe_allow_html=True)
+
 
 # Load model and data
 rf_model, training_features, feature_importance, X, y = load_trained_model()
