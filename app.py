@@ -223,7 +223,7 @@ st.markdown("""
     <p>Continuing Students</p>
 </div>
 """, unsafe_allow_html=True)
-    st.markdown("""
+st.markdown("""
     <div class="main-header" style='margin-top: 30px;'>
         <h1 style='text-align: left;'>Student Housing Needs Prediction System</h1>
         <p style='text-align: left;'>Continuing Students</p>
