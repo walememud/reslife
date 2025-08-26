@@ -239,7 +239,7 @@ page = st.sidebar.selectbox(
 )
 
 # Page 1: Model Information  
-    if rf_model is not None:
+if rf_model is not None:
         # Model Details
         st.markdown('<h3 class="section-header">Trained Model Information</h3>', unsafe_allow_html=True)
         col1, col2 = st.columns(2)
