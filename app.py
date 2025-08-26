@@ -213,7 +213,7 @@ st.markdown("""
 st.markdown("""
 <div class="main-header" style='display: flex; align-items: center; padding: 1rem 2rem;'>
     <div style='margin-right: 20px;'>
-        <img src="Picture2.png" width="150" style='display: block;'>
+        <img src="Picture1.png" width="150" style='display: block;'>
     </div>
     <div style='flex: 1;'>
         <h1 style='margin: 0; text-align: left;'>Student Housing Needs Prediction System</h1>
