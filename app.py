@@ -265,14 +265,6 @@ if page == "About":
         """)
 
     with col2:
-        st.markdown("### 🔧 Model Details")
-        st.markdown("""
-        - **Algorithm**: Random Forest Classifier  
-        - **Training Period**: 2018-2023 CMU student features  
-        - **Accuracy**: ~90%  
-        - **Features**: Academic, demographic, and enrollment variables  
-        """)
-
         st.markdown("### 📋 Required Data Format")
         st.markdown("""
         Your CSV file must contain:  
@@ -402,7 +394,7 @@ elif page == "Make Predictions":
         
         # Upload prediction data
         prediction_file = st.file_uploader(
-            "Upload Student Data (CSV Format)", 
+            "Upload Student Features (CSV Format)", 
             type=['csv']
         )
         
