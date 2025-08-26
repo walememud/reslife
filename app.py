@@ -205,21 +205,22 @@ def load_trained_model():
         return None, [], pd.DataFrame(), None, None
 
 # Header
+# Header - logo and title side by side (equal spacing)
 st.markdown("""
 <div style='margin-top: -50px; margin-bottom: -20px;'>
 </div>
 """, unsafe_allow_html=True)
 
-col1, col2, col3 = st.columns([1, 1, 1])
+col1, col2 = st.columns([1, 2])
+with col1:
+    st.image("Picture2.png", width=250)
 with col2:
-    st.image("Picture2.png", width=400)  # This will actually be larger
-    
-st.markdown("""
-<div class="main-header">
-    <h1>Student Housing Needs Prediction System</h1>
-    <p>Continuing Students</p>
-</div>
-""", unsafe_allow_html=True)
+    st.markdown("""
+    <div class="main-header" style='margin-top: 30px;'>
+        <h1 style='text-align: left;'>Student Housing Needs Prediction System</h1>
+        <p style='text-align: left;'>Continuing Students</p>
+    </div>
+    """, unsafe_allow_html=True)
 
 # Load model and data
 rf_model, training_features, feature_importance, X, y = load_trained_model()
