@@ -215,13 +215,10 @@ st.markdown("""
 # Load model and data
 rf_model, training_features, feature_importance, X, y = load_trained_model()
 
-# Sidebar Navigation
-# Sidebar Navigation - centered logo with HTML
-st.sidebar.markdown("""
-<div style='display: flex; justify-content: center; margin: 20px 0;'>
-    <img src="data:image/png;base64,{}" width="200">
-</div>
-""".format(base64.b64encode(open("Picture1.png", "rb").read()).decode()), unsafe_allow_html=True)
+# Sidebar Navigation - centered and bigger logo
+col1, col2, col3 = st.sidebar.columns([1, 2, 1])
+with col2:
+    st.image("Picture1.png", width=350)
 
 st.sidebar.markdown("---")
 
