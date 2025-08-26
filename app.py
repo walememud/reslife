@@ -204,41 +204,31 @@ def load_trained_model():
         st.error("Model file not found! Make sure trained_model_data.pkl is in the same directory.")
         return None, [], pd.DataFrame(), None, None
 
-# Header - logo and text properly inside maroon container
+# Header - logo and title side by side (equal spacing)
 st.markdown("""
-<div style='margin-top: -80px; margin-bottom: -30px;'>
+<div style='margin-top: -50px; margin-bottom: -20px;'>
 </div>
 """, unsafe_allow_html=True)
 
-# Create a container that holds everything together
-container = st.container()
-with container:
-    # Apply the maroon styling to the entire container
-    st.markdown("""
-    <style>
-    .stContainer > div:first-child {
-        background: linear-gradient(90deg, #800020 0%, #600018 100%);
-        padding: 1rem 2rem;
-        border-radius: 10px;
-        margin-bottom: 2rem;
-        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-    }
-    </style>
-    """, unsafe_allow_html=True)
+col1, col2, col3 = st.columns([1, 1, 1])
+col1, col2 = st.columns([1, 2])
+with col1:
+    st.image("Picture2.png", width=250)
+with col2:
+    st.image("Picture2.png", width=400)  # This will actually be larger
     
-    # Now put logo and text inside
-    col1, col2 = st.columns([1, 4])
-    with col1:
-        st.image("Picture2.png", width=120)
-    with col2:
-        st.markdown("""
-        <h1 style='color: white; font-weight: bold; margin: 20px 0 0 0; text-align: left;'>
-            Student Housing Needs Prediction System
-        </h1>
-        <p style='color: #FFD700; margin: 0.5rem 0 0 0; font-size: 1.1rem; text-align: left;'>
-            Continuing Students
-        </p>
-        """, unsafe_allow_html=True)
+st.markdown("""
+<div class="main-header">
+    <h1>Student Housing Needs Prediction System</h1>
+    <p>Continuing Students</p>
+</div>
+""", unsafe_allow_html=True)
+    st.markdown("""
+    <div class="main-header" style='margin-top: 30px;'>
+        <h1 style='text-align: left;'>Student Housing Needs Prediction System</h1>
+        <p style='text-align: left;'>Continuing Students</p>
+    </div>
+    """, unsafe_allow_html=True)
 
 
 # Load model and data
