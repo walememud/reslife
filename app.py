@@ -204,23 +204,41 @@ def load_trained_model():
         st.error("Model file not found! Make sure trained_model_data.pkl is in the same directory.")
         return None, [], pd.DataFrame(), None, None
 
-# Header - logo inside the maroon box
+# Header - logo inside maroon-styled container using Streamlit components
 st.markdown("""
 <div style='margin-top: -80px; margin-bottom: -30px;'>
 </div>
 """, unsafe_allow_html=True)
 
+# Create the maroon container with flexbox styling
 st.markdown("""
-<div class="main-header" style='display: flex; align-items: center; padding: 1rem 2rem;'>
-    <div style='margin-right: 20px;'>
-        <img src="Picture1.png" width="150" style='display: block;'>
-    </div>
-    <div style='flex: 1;'>
-        <h1 style='margin: 0; text-align: left;'>Student Housing Needs Prediction System</h1>
-        <p style='margin: 0.5rem 0 0 0; text-align: left;'>Continuing Students</p>
-    </div>
-</div>
+<style>
+.header-container {
+    background: linear-gradient(90deg, #800020 0%, #600018 100%);
+    padding: 1rem 2rem;
+    border-radius: 10px;
+    margin-bottom: 2rem;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+</style>
+<div class="header-container">
 """, unsafe_allow_html=True)
+
+# Use columns within the styled container
+col1, col2 = st.columns([1, 4])
+with col1:
+    st.image("Picture2.png", width=150)
+with col2:
+    st.markdown("""
+    <h1 style='color: white; font-weight: bold; margin: 0; text-align: left; margin-top: 20px;'>
+        Student Housing Needs Prediction System
+    </h1>
+    <p style='color: #FFD700; margin: 0.5rem 0 0 0; font-size: 1.1rem; text-align: left;'>
+        Continuing Students
+    </p>
+    """, unsafe_allow_html=True)
+
+st.markdown("</div>", unsafe_allow_html=True)
 
 
 # Load model and data
