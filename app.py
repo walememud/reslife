@@ -205,6 +205,10 @@ def load_trained_model():
         return None, [], pd.DataFrame(), None, None
 
 # Header
+col1, col2, col3 = st.columns([1, 1, 1])
+with col2:
+    st.image("Picture1.png", width=400)  # This will actually be larger
+    
 st.markdown("""
 <div class="main-header">
     <h1>Student Housing Needs Prediction System</h1>
