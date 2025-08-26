@@ -452,7 +452,7 @@ elif page == "Make Predictions":
                     st.download_button(
                         "Download Full Results",
                         csv,
-                        f"CMU_housing_predictions_{pd.Timestamp.now().strftime('%Y%m%d_%H%M%S')}.csv",
+                        f"CMU_housing_predictions_{pd.Timestamp.now()}.csv", #.strftime('%Y%m%d_%H%M%S')
                         "text/csv",
                         use_container_width=True
                     )
