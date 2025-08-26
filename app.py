@@ -281,59 +281,45 @@ if page == "Model Information":
         with col3:
             st.metric("Housing Class Recall", "60%", help="Percentage of actual housing cases correctly identified")
         
-        # Top 15 Feature Importance Chart
-        st.markdown('<h3 class="section-header">Top 15 Most Important Features</h3>', unsafe_allow_html=True)
-        
-        if not feature_importance.empty:
-            top_15_features = feature_importance.head(15)
-            
-            # Create horizontal bar chart
-            fig, ax = plt.subplots(figsize=(12, 8))
-            fig.patch.set_facecolor('white')
-            
-            bars = ax.barh(range(len(top_15_features)), top_15_features['importance'], 
-                          color='#800020', alpha=0.8, edgecolor='#600018', linewidth=1)
-            
-            # Add +/- labels (with safety check for NaN correlations)
-            for i, (importance, effect, corr) in enumerate(zip(top_15_features['importance'], 
-                                                               top_15_features['effect'], 
-                                                               top_15_features['correlation'])):
-                if pd.isna(corr) or corr == 0:
-                    sign = '='
-                    color = '#808080'
-                else:
-                    sign = '+' if corr > 0 else '-'
-                    color = '#006400' if corr > 0 else '#8B0000'
-                
-                ax.text(importance + max(top_15_features['importance']) * 0.01, i, f'{sign}', 
-                       fontweight='bold', color=color, fontsize=12)
-            
-            ax.set_yticks(range(len(top_15_features)))
-            ax.set_yticklabels(top_15_features['feature'], fontsize=10)
-            ax.set_xlabel('Feature Importance', fontsize=12, fontweight='bold', color='#800020')
-            ax.set_title('Top 15 Most Important Features for Housing Prediction', 
-                        fontsize=14, fontweight='bold', color='#800020', pad=20)
-            ax.invert_yaxis()
-            
-            ax.grid(True, alpha=0.3, color='#800020', linestyle='--')
-            ax.spines['top'].set_visible(False)
-            ax.spines['right'].set_visible(False)
-            ax.spines['left'].set_color('#800020')
-            ax.spines['bottom'].set_color('#800020')
-            ax.tick_params(colors='#800020')
-            
-            st.pyplot(fig)
-            
-            # Feature importance table
-            st.markdown('<h3 class="section-header">Feature Importance Details</h3>', unsafe_allow_html=True)
-            display_features = top_15_features[['feature', 'importance', 'effect']].copy()
-            display_features['importance'] = display_features['importance'].round(4)
-            display_features.index = range(1, len(display_features) + 1)
-            display_features.columns = ['Feature Name', 'Importance Score', 'Effect Direction']
-            st.dataframe(display_features, use_container_width=True)
-    else:
-        st.error("Model not available. Please check if trained_model_data.pkl exists.")
+# Top 15 Feature Importance Chart
+st.markdown('<h3 class="section-header">Top 15 Most Important Features</h3>', unsafe_allow_html=True)
 
+if not feature_importance.empty:
+    top_15_features = feature_importance.head(15)
+    
+    # Create horizontal bar chart
+    fig, ax = plt.subplots(figsize=(12, 8))
+    fig.patch.set_facecolor('white')
+    
+    bars = ax.barh(range(len(top_15_features)), top_15_features['importance'], 
+                  color='#800020', alpha=0.8, edgecolor='#600018', linewidth=1)
+    
+    ax.set_yticks(range(len(top_15_features)))
+    ax.set_yticklabels(top_15_features['feature'], fontsize=10)
+    ax.set_xlabel('Feature Importance', fontsize=12, fontweight='bold', color='#800020')
+    ax.set_title('Top 15 Most Important Features for Housing Prediction', 
+                fontsize=14, fontweight='bold', color='#800020', pad=20)
+    ax.invert_yaxis()
+    
+    ax.grid(True, alpha=0.3, color='#800020', linestyle='--')
+    ax.spines['top'].set_visible(False)
+    ax.spines['right'].set_visible(False)
+    ax.spines['left'].set_color('#800020')
+    ax.spines['bottom'].set_color('#800020')
+    ax.tick_params(colors='#800020')
+    
+    st.pyplot(fig)
+    
+    # Feature importance table - simplified to remove effect direction
+    st.markdown('<h3 class="section-header">Feature Importance Details</h3>', unsafe_allow_html=True)
+    display_features = top_15_features[['feature', 'importance']].copy()
+    display_features['importance'] = display_features['importance'].round(4)
+    display_features.index = range(1, len(display_features) + 1)
+    display_features.columns = ['Feature Name', 'Importance Score']
+    st.dataframe(display_features, use_container_width=True)
+else:
+    st.error("Model not available. Please check if trained_model_data.pkl exists.")
+    
 # Page 2: Make Predictions - FIXED CONDITIONAL
 elif page == "Make Predictions":
     
