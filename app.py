@@ -244,7 +244,7 @@ if page == "Model Information":
     
     if rf_model is not None:
         # Model Details
-        st.markdown('<h3 class="section-header">Trained Model Information</h3>', unsafe_allow_html=True)
+        st.markdown('<h3 class="section-header">Prediction Model Summary</h3>', unsafe_allow_html=True)
         col1, col2 = st.columns(2)
         with col1:
             st.info("**Model Type:** Random Forest")
