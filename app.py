@@ -334,7 +334,7 @@ if rf_model is not None:
                 **{'text-align': 'left'}
             )
             st.dataframe(display_features, use_container_width=True)
-    else:
+else:
         st.error("Model not available. Please check if trained_model_data.pkl exists.")
 
 # Page 2: Make Predictions
