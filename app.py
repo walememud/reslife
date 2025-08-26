@@ -463,8 +463,8 @@ elif page == "Make Predictions":
         st.error("Model not available")
 
 # Sidebar
-st.sidebar.markdown("---")
-if rf_model is not None:
+#st.sidebar.markdown("---")
+#if rf_model is not None:
     #st.sidebar.info(f"Designed by: IR Team")
-else:
-    st.sidebar.error("Model Not Available")
+#else:
+  #  st.sidebar.error("Model Not Available")
