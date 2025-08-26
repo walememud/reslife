@@ -247,7 +247,7 @@ if page == "Model Information":
         st.markdown('<h3 class="section-header">Model Configuration</h3>', unsafe_allow_html=True)
         col1, col2 = st.columns(2)
         with col1:
-            st.info("**Model Type:** Random Forest (No Class Balancing)")
+            st.info("**Model Type:** Random Forest")
             st.info(f"**Training Data:** 2018-2023 CMU Student Data")
             st.info(f"**Number of Features:** {len(training_features)}")
         with col2:
