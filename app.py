@@ -229,7 +229,7 @@ rf_model, training_features, feature_importance, X, y = load_trained_model()
 # Sidebar Navigation - centered and bigger logo
 col1, col2, col3 = st.sidebar.columns([1, 2, 1])
 with col2:
-    st.image("biglogo.jpg", use_container_width=True)
+    st.image("biglogo.png", use_container_width=True)
 
 st.sidebar.markdown("---")
 
