@@ -486,6 +486,37 @@ elif page == "Make Predictions":
                     styled_sample = display_sample.style.format({'Student ID': lambda x: f"{x}"})
                     st.dataframe(styled_sample, use_container_width=True, hide_index=True)
                     
+                    # ADD FEATURE IMPORTANCE SECTION AFTER PREDICTIONS
+                    st.markdown("---")
+                    st.markdown('<h3 class="section-header">Model Decision Factors</h3>', unsafe_allow_html=True)
+                    st.info("These are the features the model considered most important when making the predictions above:")
+                    
+                    if not feature_importance.empty:
+                        top_10_features = feature_importance.head(10)  # Show top 10 for predictions page
+                        
+                        # Create horizontal bar chart
+                        fig, ax = plt.subplots(figsize=(10, 6))
+                        fig.patch.set_facecolor('white')
+                        
+                        bars = ax.barh(range(len(top_10_features)), top_10_features['importance'], 
+                                      color='#800020', alpha=0.8, edgecolor='#600018', linewidth=1)
+                        
+                        ax.set_yticks(range(len(top_10_features)))
+                        ax.set_yticklabels(top_10_features['feature'], fontsize=10)
+                        ax.set_xlabel('Feature Importance', fontsize=12, fontweight='bold', color='#800020')
+                        ax.set_title('Top 10 Features Used for These Predictions', 
+                                    fontsize=14, fontweight='bold', color='#800020', pad=20)
+                        ax.invert_yaxis()
+                        
+                        ax.grid(True, alpha=0.3, color='#800020', linestyle='--')
+                        ax.spines['top'].set_visible(False)
+                        ax.spines['right'].set_visible(False)
+                        ax.spines['left'].set_color('#800020')
+                        ax.spines['bottom'].set_color('#800020')
+                        ax.tick_params(colors='#800020')
+                        
+                        st.pyplot(fig)
+                    
                     # Download - ensure proper string formatting in CSV
                     csv_results = results_df.copy()
                     csv_results['TermPIDMKey'] = csv_results['TermPIDMKey'].astype(str)
