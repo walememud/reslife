@@ -633,6 +633,45 @@ elif page == "Make Predictions":
                     if feature_coverage < 0.8:
                         insights.append(f"Limited feature overlap: Only {feature_coverage:.1%} of training features present in your data")
 
+                    # Summary
+col1, col2, col3, col4 = st.columns(4)
+has_housing = int(predictions.sum())
+with col1:
+    st.metric("Total Students", f"{len(results_df):,}")
+with col2:
+    st.metric("Need Housing", f"{has_housing:,}")
+with col3:
+    st.metric("No Housing Needed", f"{len(predictions)-has_housing:,}")
+with col4:
+    st.metric("Housing Rate", f"{predictions.mean():.1%}")
+
+# ADD THIS NEW SECTION - Confidence Range Based on Model Accuracy
+st.markdown("---")
+st.markdown('<h3 class="section-header">Planning Recommendations</h3>', unsafe_allow_html=True)
+
+# Calculate confidence interval based on 90% accuracy
+lower_bound = int(has_housing * 0.9)
+upper_bound = int(has_housing * 1.1)
+
+col1, col2 = st.columns(2)
+with col1:
+    st.info(f"""
+    **Predicted Students Needing Housing:** {has_housing:,}
+    
+    **Confidence Range (±10% based on 90% accuracy):**
+    - Lower bound: {lower_bound:,} students
+    - Upper bound: {upper_bound:,} students
+    """)
+
+with col2:
+    st.warning(f"""
+    **Leadership Recommendation:**
+    
+    Plan for **{has_housing:,}** housing spaces with awareness that actual demand could range from **{lower_bound:,}** to **{upper_bound:,}** students.
+    
+    **Note:** Given housing shortage consequences, planning for the full predicted amount ({has_housing:,}) or slightly above is recommended.
+    """)
+
                     if insights:
                         for insight in insights:
                             st.write(f"• {insight}")
