@@ -626,7 +626,7 @@ elif page == "Make Predictions":
                     elif housing_rate < 0.1:
                         insights.append(f"Low housing demand: Only {housing_rate:.1%} of students predicted to need housing")
                     else:
-                        insights.append(f"Housing demand rate: {housing_rate:.1%} of continuing students predicted to need housing")
+                        insights.append(f"Housing demand rate: {housing_rate:.1%} of continuing students predicted to need housing (historical average 2018-2023: 16.5%) ")
                     
 
                     # Feature coverage
@@ -651,7 +651,7 @@ elif page == "Make Predictions":
                     st.info(f"""
                     **Predicted Students Needing Housing:** {has_housing:,}
 
-                    **Confidence Range (±10% based on 90% accuracy):**
+                    **Confidence Range (Based on 66% Precision and 60% Recall):**
                     - Lower bound: {lower_bound:,} students
                     - Upper bound: {upper_bound:,} students
                     """)
