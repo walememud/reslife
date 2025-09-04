@@ -657,17 +657,11 @@ elif page == "Make Predictions":
                     st.info(f"""
                     **Predicted Students Needing Housing:** {has_housing:,}
 
-                    **Estimated Range (based on model precision/recall):**
-                    - Conservative estimate: ({lower_bound_rate:.1%}) {lower_bound:,} students (true positives)
-                    - Total estimated need: ({upper_bound_rate:.1%}) {upper_bound:,} students (including missed cases)
+                    **Confidence Range (based on model precision and recall):**
+                    - Lower bound:  {lower_bound:,} students ({lower_bound_rate:.1%})
+                    - Upper bound:  {upper_bound:,} students ({upper_bound_rate:.1%})
                     """)
-                    st.info(f"""
-                    **Predicted Students Needing Housing:** {has_housing:,}
-
-                    **Confidence Range (Based on 66% Precision and 60% Recall):**
-                    - Lower bound: {lower_bound:,} students
-                    - Upper bound: {upper_bound:,} students
-                    """)
+                   
                     # Download - ensure proper string formatting in CSV
                     csv_results = results_df.copy()
                     csv_results['TermPIDMKey'] = csv_results['TermPIDMKey'].astype(str)
