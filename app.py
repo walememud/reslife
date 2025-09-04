@@ -645,9 +645,22 @@ elif page == "Make Predictions":
 
                     # Calculate confidence interval based on 90% accuracy
                     # Precision/Recall based confidence range
+                    # Precision/Recall based confidence range
                     lower_bound = int(has_housing * 0.66)  # True positives (66% precision)
                     upper_bound = int(has_housing * 1.10)  # Total need estimate (0.66/0.60 = 1.10)
 
+                    # Calculate housing rates for each bound
+                    total_students = len(results_df)
+                    lower_bound_rate = lower_bound / total_students
+                    upper_bound_rate = upper_bound / total_students
+
+                    st.info(f"""
+                    **Predicted Students Needing Housing:** {has_housing:,}
+
+                    **Estimated Range (based on model precision/recall):**
+                    - Conservative estimate: ({lower_bound_rate:.1%}) {lower_bound:,} students (true positives)
+                    - Total estimated need: ({upper_bound_rate:.1%}) {upper_bound:,} students (including missed cases)
+                    """)
                     st.info(f"""
                     **Predicted Students Needing Housing:** {has_housing:,}
 
