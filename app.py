@@ -546,7 +546,16 @@ elif page == "Make Predictions":
 
                     # Feature distribution comparison chart
                     st.subheader("Feature Distributions Comparison")
-
+                    
+                    # Get term from your uploaded data
+                    if 'Term' in df_new.columns:
+                        term_value = df_new['Term'].iloc[0]  # Get first term value
+                        current_year = int(str(term_value)[:4])  # Get first 4 digits of term
+                        prediction_year = current_year + 1
+                    else:
+                        # Fallback if no Term column
+                        prediction_year = "next year"
+                        
                     # Select a few key features to compare
                     key_features = []
                     if 'Age' in X_new.columns:
@@ -581,7 +590,7 @@ elif page == "Make Predictions":
                                 x = range(len(categories))
                                 width = 0.35
                                 
-                                ax.bar([i - width/2 for i in x], pred_pcts, width, label='Current Year', color='#800020', alpha=0.8)
+                                ax.bar([i - width/2 for i in x], pred_pcts, width, label={current_year}, color='#800020', alpha=0.8)
                                 if feature in X.columns:
                                     ax.bar([i + width/2 for i in x], train_pcts, width, label='Training Data', color='#FFD700', alpha=0.8)
                                 
@@ -592,7 +601,7 @@ elif page == "Make Predictions":
                                 
                             else:
                                 # Numeric feature - histogram
-                                ax.hist(X_new[feature], bins=20, alpha=0.7, label='Current Year', color='#800020', density=True)
+                                ax.hist(X_new[feature], bins=20, alpha=0.7, label={current_year}, color='#800020', density=True)
                                 if feature in X.columns:
                                     ax.hist(X[feature], bins=20, alpha=0.5, label='Training Data', color='#FFD700', density=True)
                                 ax.set_xlabel(feature)
@@ -619,15 +628,6 @@ elif page == "Make Predictions":
                             direction = "older" if age_diff > 0 else "younger"
                             insights.append(f"Your students are on average {abs(age_diff):.1f} years {direction} than the training data")
 
-
-                    # Get term from your uploaded data
-                    if 'Term' in df_new.columns:
-                        term_value = df_new['Term'].iloc[0]  # Get first term value
-                        current_year = int(str(term_value)[:4])  # Get first 4 digits of term
-                        prediction_year = current_year + 1
-                    else:
-                        # Fallback if no Term column
-                        prediction_year = "next year"
                     
                     # Housing prediction rate
                     housing_rate = predictions.mean()
