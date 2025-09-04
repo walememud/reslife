@@ -621,8 +621,9 @@ elif page == "Make Predictions":
 
 
                     # Extract year from term and add 1
-                    current_year = int(str(term)[:4])  # Get first 4 digits of term
+                    current_year = int(str(Term)[:4])  # Get first 4 digits of term
                     prediction_year = current_year + 1
+                    
                     # Housing prediction rate
                     housing_rate = predictions.mean()
                     if housing_rate > 0.3:
