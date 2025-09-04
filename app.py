@@ -590,7 +590,7 @@ elif page == "Make Predictions":
                                 x = range(len(categories))
                                 width = 0.35
                                 
-                                ax.bar([i - width/2 for i in x], pred_pcts, width, label='current_year}', color='#800020', alpha=0.8)
+                                ax.bar([i - width/2 for i in x], pred_pcts, width, label=f'{current_year}', color='#800020', alpha=0.8)
                                 if feature in X.columns:
                                     ax.bar([i + width/2 for i in x], train_pcts, width, label='Training Data', color='#FFD700', alpha=0.8)
                                 
@@ -601,7 +601,7 @@ elif page == "Make Predictions":
                                 
                             else:
                                 # Numeric feature - histogram
-                                ax.hist(X_new[feature], bins=20, alpha=0.7, label='current_year}', color='#800020', density=True)
+                                ax.hist(X_new[feature], bins=20, alpha=0.7, label=f'{current_year}', color='#800020', density=True)
                                 if feature in X.columns:
                                     ax.hist(X[feature], bins=20, alpha=0.5, label='Training Data', color='#FFD700', density=True)
                                 ax.set_xlabel(feature)
