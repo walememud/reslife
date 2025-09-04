@@ -468,33 +468,6 @@ elif page == "Make Predictions":
                     with col4:
                         st.metric("Housing Rate", f"{predictions.mean():.1%}")
                     
-                    # Planning Recommendations Section
-                    st.markdown("---")
-                    st.markdown('<h3 class="section-header">Planning Recommendations</h3>', unsafe_allow_html=True)
-
-                    # Calculate confidence interval based on 90% accuracy
-                    lower_bound = int(has_housing * 0.9)
-                    upper_bound = int(has_housing * 1.1)
-
-                    col1, col2 = st.columns(2)
-                    with col1:
-                        st.info(f"""
-                        **Predicted Students Needing Housing:** {has_housing:,}
-                        
-                        **Confidence Range (±10% based on 90% accuracy):**
-                        - Lower bound: {lower_bound:,} students
-                        - Upper bound: {upper_bound:,} students
-                        """)
-
-                    with col2:
-                        st.warning(f"""
-                        **Leadership Recommendation:**
-                        
-                        Plan for **{has_housing:,}** housing spaces with awareness that actual demand could range from **{lower_bound:,}** to **{upper_bound:,}** students.
-                        
-                        **Note:** Given housing shortage consequences, planning for the full predicted amount ({has_housing:,}) or slightly above is recommended.
-                        """)
-                    
                     # Sample results
                     st.subheader("Sample Results")
                     sample = results_df.head(10).copy()
@@ -653,7 +626,8 @@ elif page == "Make Predictions":
                     elif housing_rate < 0.1:
                         insights.append(f"Low housing demand: Only {housing_rate:.1%} of students predicted to need housing")
                     else:
-                        insights.append(f"Housing demand rate: {housing_rate:.1%} of continuing students predicted to need housing")
+                        insights.append(f"Housing demand rate: {housing_rate:.1%} of continuing students predicted to need housing)
+                    
 
                     # Feature coverage
                     feature_coverage = len(set(X_new.columns) & set(X.columns)) / len(X.columns)
@@ -665,7 +639,21 @@ elif page == "Make Predictions":
                             st.write(f"• {insight}")
                     else:
                         st.write("• Your prediction dataset appears similar to the training data characteristics")
-                    
+                    # ADD THIS RIGHT AFTER THE INSIGHTS
+                    st.markdown("---")
+                    st.markdown('<h3 class="section-header">Confidence Range</h3>', unsafe_allow_html=True)
+
+                    # Calculate confidence interval based on 90% accuracy
+                    lower_bound = int(has_housing * 0.9)
+                    upper_bound = int(has_housing * 1.1)
+
+                    st.info(f"""
+                    **Predicted Students Needing Housing:** {has_housing:,}
+
+                    **Confidence Range (±10% based on 90% accuracy):**
+                    - Lower bound: {lower_bound:,} students
+                    - Upper bound: {upper_bound:,} students
+                    """)
                     # Download - ensure proper string formatting in CSV
                     csv_results = results_df.copy()
                     csv_results['TermPIDMKey'] = csv_results['TermPIDMKey'].astype(str)
