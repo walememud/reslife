@@ -479,6 +479,90 @@ elif page == "Make Predictions":
                     # Format the display to prevent scientific notation
                     styled_sample = display_sample.style.format({'Student ID': lambda x: f"{x}"})
                     st.dataframe(styled_sample, use_container_width=True, hide_index=True)
+
+                    # Add this code right after the sample results display and before the "---" line
+
+                    # COHORT YEAR DISTRIBUTION FOR HOUSING PREDICTIONS
+                    if 'COHORT_YEAR' in df_new.columns and has_housing > 0:
+                        st.markdown("---")
+                        st.markdown('<h3 class="section-header">Cohort Year Distribution - Students Predicted to Need Housing</h3>', unsafe_allow_html=True)
+                        
+                        # Get cohort years for students predicted to need housing
+                        housing_indices = results_df[results_df['Predicted_Has_Future_Housing'] == 1].index
+                        housing_cohorts = df_new.loc[housing_indices, 'COHORT_YEAR'].copy()
+                        
+                        # Create cohort distribution
+                        cohort_counts = housing_cohorts.value_counts().sort_index()
+                        cohort_percentages = (cohort_counts / cohort_counts.sum() * 100).round(1)
+                        
+                        # Create the bar chart
+                        fig, ax = plt.subplots(figsize=(12, 6))
+                        fig.patch.set_facecolor('white')
+                        
+                        bars = ax.bar(cohort_counts.index.astype(str), cohort_counts.values, 
+                                     color='#800020', alpha=0.8, edgecolor='#600018', linewidth=1)
+                        
+                        # Add percentage labels on top of bars
+                        for i, (bar, pct) in enumerate(zip(bars, cohort_percentages.values)):
+                            height = bar.get_height()
+                            ax.text(bar.get_x() + bar.get_width()/2., height + max(cohort_counts.values)*0.01,
+                                   f'{int(height)}\n({pct}%)', 
+                                   ha='center', va='bottom', fontweight='bold', fontsize=10)
+                        
+                        ax.set_xlabel('Cohort Year', fontsize=12, fontweight='bold', color='#800020')
+                        ax.set_ylabel('Number of Students', fontsize=12, fontweight='bold', color='#800020')
+                        ax.set_title(f'Cohort Distribution of {has_housing:,} Students Predicted to Need Housing in {prediction_year}', 
+                                    fontsize=14, fontweight='bold', color='#800020', pad=20)
+                        
+                        ax.grid(True, alpha=0.3, color='#800020', linestyle='--', axis='y')
+                        ax.spines['top'].set_visible(False)
+                        ax.spines['right'].set_visible(False)
+                        ax.spines['left'].set_color('#800020')
+                        ax.spines['bottom'].set_color('#800020')
+                        ax.tick_params(colors='#800020')
+                        
+                        # Rotate x-axis labels if there are many cohort years
+                        if len(cohort_counts) > 8:
+                            ax.tick_params(axis='x', rotation=45)
+                        
+                        plt.tight_layout()
+                        st.pyplot(fig)
+                        
+                        # Summary table
+                        col1, col2 = st.columns(2)
+                        
+                        with col1:
+                            st.subheader("Cohort Summary")
+                            cohort_summary = pd.DataFrame({
+                                'Cohort Year': cohort_counts.index,
+                                'Students': cohort_counts.values,
+                                'Percentage': cohort_percentages.values
+                            })
+                            cohort_summary['Percentage'] = cohort_summary['Percentage'].apply(lambda x: f"{x}%")
+                            st.dataframe(cohort_summary, use_container_width=True, hide_index=True)
+                        
+                        with col2:
+                            st.subheader("Key Insights")
+                            
+                            # Find dominant cohorts
+                            top_cohort = cohort_counts.idxmax()
+                            top_cohort_pct = cohort_percentages.max()
+                            
+                            # Calculate years in school for prediction year
+                            years_in_school = prediction_year - top_cohort
+                            
+                            insights = [
+                                f"**Largest group:** {top_cohort} cohort ({top_cohort_pct}% of housing predictions)",
+                                f"**Academic standing:** Most will be {years_in_school}-year students in {prediction_year}",
+                                f"**Cohort range:** {cohort_counts.index.min()} to {cohort_counts.index.max()}",
+                                f"**Total cohorts:** {len(cohort_counts)} different cohort years"
+                            ]
+                            
+                            for insight in insights:
+                                st.write(f"• {insight}")
+                    
+                    elif 'COHORT_YEAR' not in df_new.columns:
+                        st.warning("⚠️ COHORT_YEAR column not found in uploaded data. Cannot display cohort distribution.")
                     
                     # PREDICTION DATASET ANALYSIS SECTION
                     st.markdown("---")
