@@ -558,17 +558,18 @@ elif page == "Make Predictions":
                         
                     # Select a few key features to compare
                     key_features = []
-                    if 'Age' in X_new.columns:
-                        key_features.append('Age')
-                    if 'Total Credit Taken' in X_new.columns:
-                        key_features.append('Total Credit Taken')
+                    if 'Has_Housing' in X_new.columns:
+                        key_features.append('Has_Housing')
                     if 'Has_Meal_Plan' in X_new.columns:
                         key_features.append('Has_Meal_Plan')
+                    if 'Age' in X_new.columns:
+                        key_features.append('Age')
                     if 'Student Type' in X_new.columns:
                         key_features.append('Student Type')
-
+                    if 'COHORT_YEAR' in X_new.columns:
+                        key_features.append('Cohort Year')
                     # Limit to first 4 features to avoid overcrowding
-                    key_features = key_features[:4]
+                    key_features = key_features[:5]
 
                     if key_features:
                         fig, axes = plt.subplots(1, len(key_features), figsize=(4*len(key_features), 5))
