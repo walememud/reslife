@@ -620,13 +620,14 @@ elif page == "Make Predictions":
                             insights.append(f"Your students are on average {abs(age_diff):.1f} years {direction} than the training data")
 
 
-                    # Extract year from term and add 1
+                    # Get term from your uploaded data
                     if 'Term' in df_new.columns:
-                        term = df_new['Term'].iloc[0]  # Get first term value
-                        current_year = int(str(term)[:4])
-                    prediction_year = current_year + 1
-                        else:
-                            prediction_year = "next year"  # fallback
+                        term_value = df_new['Term'].iloc[0]  # Get first term value
+                        current_year = int(str(term_value)[:4])  # Get first 4 digits of term
+                        prediction_year = current_year + 1
+                    else:
+                        # Fallback if no Term column
+                        prediction_year = "next year"
                     
                     # Housing prediction rate
                     housing_rate = predictions.mean()
