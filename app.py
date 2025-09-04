@@ -626,7 +626,7 @@ elif page == "Make Predictions":
                     elif housing_rate < 0.1:
                         insights.append(f"Low housing demand: Only {housing_rate:.1%} of students predicted to need housing")
                     else:
-                        insights.append(f"Housing demand rate: {housing_rate:.1%} of continuing students predicted to need housing)
+                        insights.append(f"Housing demand rate: {housing_rate:.1%} of continuing students predicted to need housing")
                     
 
                     # Feature coverage
