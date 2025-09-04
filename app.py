@@ -658,8 +658,8 @@ elif page == "Make Predictions":
                     **Predicted Students Needing Housing:** {has_housing:,}
 
                     **Confidence Range (based on model precision and recall):**
-                    - Lower bound:  {lower_bound:,} students ({lower_bound_rate:.1%})
-                    - Upper bound:  {upper_bound:,} students ({upper_bound_rate:.1%})
+                    - Lower bound:  {lower_bound:,} students (Housing rate {lower_bound_rate:.1%})
+                    - Upper bound:  {upper_bound:,} students (Housing rate {upper_bound_rate:.1%})
                     """)
                    
                     # Download - ensure proper string formatting in CSV
