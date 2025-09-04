@@ -453,6 +453,16 @@ elif page == "Make Predictions":
                         
                         # Ensure TermPIDMKey stays as string in results
                         results_df['TermPIDMKey'] = results_df['TermPIDMKey'].astype(str)
+                        
+                        # Get term from uploaded data and calculate prediction year
+                        if 'Term' in df_new.columns:
+                            term_value = df_new['Term'].iloc[0]  # Get first term value
+                            current_year = int(str(term_value)[:4])  # Get first 4 digits of term
+                            prediction_year = current_year + 1
+                        else:
+                            # Fallback if no Term column
+                            current_year = 2024  # Default fallback
+                            prediction_year = current_year + 1
                     
                     st.success("Predictions completed!")
                     
@@ -479,8 +489,6 @@ elif page == "Make Predictions":
                     # Format the display to prevent scientific notation
                     styled_sample = display_sample.style.format({'Student ID': lambda x: f"{x}"})
                     st.dataframe(styled_sample, use_container_width=True, hide_index=True)
-
-                    # Add this code right after the sample results display and before the "---" line
 
                     # COHORT YEAR DISTRIBUTION FOR HOUSING PREDICTIONS
                     if 'COHORT_YEAR' in df_new.columns and has_housing > 0:
@@ -619,15 +627,6 @@ elif page == "Make Predictions":
 
                     # Feature distribution comparison chart
                     st.subheader("Feature Distributions Comparison")
-                    
-                    # Get term from your uploaded data
-                    if 'Term' in df_new.columns:
-                        term_value = df_new['Term'].iloc[0]  # Get first term value
-                        current_year = int(str(term_value)[:4])  # Get first 4 digits of term
-                        prediction_year = current_year + 1
-                    else:
-                        # Fallback if no Term column
-                        prediction_year = "next year"
                         
                     # Select a few key features to compare
                     key_features = []
