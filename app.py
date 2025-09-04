@@ -499,17 +499,6 @@ elif page == "Make Predictions":
                         numeric_features = X_new.select_dtypes(include=[np.number]).columns
                         if len(numeric_features) > 0:
                             st.write(f"**Numeric features:** {len(numeric_features)}")
-                            
-                            # Show some key statistics for a few important features
-                            if 'Age' in X_new.columns:
-                                pred_age_avg = X_new['Age'].mean()
-                                train_age_avg = X['Age'].mean() if 'Age' in X.columns else 'N/A'
-                                st.write(f"**Average Age:** {pred_age_avg:.1f} (Training: {train_age_avg:.1f})")
-                            
-                            if 'Total Credit Taken' in X_new.columns:
-                                pred_credits = X_new['Total Credit Taken'].mean()
-                                train_credits = X['Total Credit Taken'].mean() if 'Total Credit Taken' in X.columns else 'N/A'
-                                st.write(f"**Average Credits:** {pred_credits:.1f} (Training: {train_credits:.1f})")
 
                     with col2:
                         st.subheader("Data Quality Check")
