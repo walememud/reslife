@@ -621,8 +621,12 @@ elif page == "Make Predictions":
 
 
                     # Extract year from term and add 1
-                    current_year = int(str(Term)[:4])  # Get first 4 digits of term
+                    if 'Term' in df_new.columns:
+                        term = df_new['Term'].iloc[0]  # Get first term value
+                        current_year = int(str(term)[:4])
                     prediction_year = current_year + 1
+                    else:
+                        prediction_year = "next year"  # fallback
                     
                     # Housing prediction rate
                     housing_rate = predictions.mean()
