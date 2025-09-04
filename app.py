@@ -567,7 +567,7 @@ elif page == "Make Predictions":
                     if 'Student Type' in X_new.columns:
                         key_features.append('Student Type')
                     if 'COHORT_YEAR' in X_new.columns:
-                        key_features.append('Cohort Year')
+                        key_features.append('COHORT_YEAR')
                     # Limit to first 4 features to avoid overcrowding
                     key_features = key_features[:5]
 
