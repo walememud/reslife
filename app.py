@@ -210,18 +210,12 @@ st.markdown("""
 </div>
 """, unsafe_allow_html=True)
 
-#col1, col2, col3 = st.columns([1, 1, 1])
-#with col2:
-  #  st.image("Picture2.png", width=400)  # This will actually be larger
-    
 st.markdown("""
 <div class="main-header">
     <h1>Student Housing Needs Prediction System</h1>
      <p style="font-size:200%;">Continuing Students</p>
 </div>
 """, unsafe_allow_html=True)
-
-
 
 # Load model and data
 rf_model, training_features, feature_importance, X, y = load_trained_model()
@@ -248,14 +242,14 @@ if page == "About":
     col1, col2 = st.columns(2)
 
     with col1:
-        st.markdown("### 🚀 Features")
+        st.markdown("### Features")
         st.markdown("""
         - **Model Information**: View machine learning model details and feature importance  
         - **Predictions**: Upload student features and get housing predictions   
         - **Export Results**: Download predictions as CSV  
         """)
 
-        st.markdown("### 📱 How to Use")
+        st.markdown("### How to Use")
         st.markdown("""
         - Navigate to the **Model Information** section to understand the model  
         - Go to **Make Predictions** to upload student features  
@@ -265,7 +259,7 @@ if page == "About":
         """)
 
     with col2:
-        st.markdown("### 📋 Required Data Format")
+        st.markdown("### Required Data Format")
         st.markdown("""
         Your CSV file must contain:  
         - **TermPIDMKey**: Student identifier  
@@ -273,7 +267,7 @@ if page == "About":
         - No missing required columns  
         """)
 
-        st.markdown("### 🛠️ Technical Stack")
+        st.markdown("### Technical Stack")
         st.markdown("""
         - **Frontend**: Streamlit  
         - **ML Library**: scikit-learn  
@@ -284,7 +278,7 @@ if page == "About":
     st.markdown("---")
     st.markdown("**Version 1:** 2025-08-26 - Colorado Mesa University - Institutional Research, Planning and Decision Support")
 
-# Page 1: Model Information  
+# Page 2: Model Information  
 elif page == "Model Information":
     st.markdown('<h2 class="section-header">Trained Model Information</h2>', unsafe_allow_html=True)
     
@@ -386,7 +380,7 @@ elif page == "Model Information":
     else:
         st.error("Model not available. Please check if trained_model_data.pkl exists.")
 
-# Page 2: Make Predictions
+# Page 3: Make Predictions
 elif page == "Make Predictions":
     
     if rf_model is not None:
@@ -486,36 +480,164 @@ elif page == "Make Predictions":
                     styled_sample = display_sample.style.format({'Student ID': lambda x: f"{x}"})
                     st.dataframe(styled_sample, use_container_width=True, hide_index=True)
                     
-                    # ADD FEATURE IMPORTANCE SECTION AFTER PREDICTIONS
+                    # PREDICTION DATASET ANALYSIS SECTION
                     st.markdown("---")
-                    st.markdown('<h3 class="section-header">Model Decision Factors</h3>', unsafe_allow_html=True)
-                    st.info("These are the features the model considered most important when making the predictions above:")
-                    
-                    if not feature_importance.empty:
-                        top_10_features = feature_importance.head(10)  # Show top 10 for predictions page
+                    st.markdown('<h3 class="section-header">Prediction Dataset Analysis</h3>', unsafe_allow_html=True)
+                    st.info("Analysis of the student data you uploaded for predictions:")
+
+                    # Dataset comparison and statistics
+                    col1, col2 = st.columns(2)
+
+                    with col1:
+                        st.subheader("Dataset Overview")
                         
-                        # Create horizontal bar chart
-                        fig, ax = plt.subplots(figsize=(10, 6))
-                        fig.patch.set_facecolor('white')
+                        # Basic statistics about the prediction dataset
+                        st.write(f"**Students analyzed:** {len(X_new):,}")
+                        st.write(f"**Features included:** {len(X_new.columns)}")
                         
-                        bars = ax.barh(range(len(top_10_features)), top_10_features['importance'], 
-                                      color='#800020', alpha=0.8, edgecolor='#600018', linewidth=1)
+                        # Compare key numeric features if they exist
+                        numeric_features = X_new.select_dtypes(include=[np.number]).columns
+                        if len(numeric_features) > 0:
+                            st.write(f"**Numeric features:** {len(numeric_features)}")
+                            
+                            # Show some key statistics for a few important features
+                            if 'Age' in X_new.columns:
+                                pred_age_avg = X_new['Age'].mean()
+                                train_age_avg = X['Age'].mean() if 'Age' in X.columns else 'N/A'
+                                st.write(f"**Average Age:** {pred_age_avg:.1f} (Training: {train_age_avg:.1f})")
+                            
+                            if 'Total Credit Taken' in X_new.columns:
+                                pred_credits = X_new['Total Credit Taken'].mean()
+                                train_credits = X['Total Credit Taken'].mean() if 'Total Credit Taken' in X.columns else 'N/A'
+                                st.write(f"**Average Credits:** {pred_credits:.1f} (Training: {train_credits:.1f})")
+
+                    with col2:
+                        st.subheader("Data Quality Check")
                         
-                        ax.set_yticks(range(len(top_10_features)))
-                        ax.set_yticklabels(top_10_features['feature'], fontsize=10)
-                        ax.set_xlabel('Feature Importance', fontsize=12, fontweight='bold', color='#800020')
-                        ax.set_title('Top 10 Features Used for These Predictions', 
-                                    fontsize=14, fontweight='bold', color='#800020', pad=20)
-                        ax.invert_yaxis()
+                        # Check for missing values
+                        missing_counts = X_new.isnull().sum()
+                        if missing_counts.sum() > 0:
+                            st.warning(f"**Missing values found:** {missing_counts.sum()} total")
+                            missing_features = missing_counts[missing_counts > 0]
+                            for feature, count in missing_features.items():
+                                st.write(f"- {feature}: {count} missing")
+                        else:
+                            st.success("**No missing values detected**")
                         
-                        ax.grid(True, alpha=0.3, color='#800020', linestyle='--')
-                        ax.spines['top'].set_visible(False)
-                        ax.spines['right'].set_visible(False)
-                        ax.spines['left'].set_color('#800020')
-                        ax.spines['bottom'].set_color('#800020')
-                        ax.tick_params(colors='#800020')
+                        # Check for potential outliers in numeric features
+                        outlier_features = []
+                        for feature in numeric_features[:3]:  # Check top 3 numeric features
+                            if feature in X.columns:  # Compare to training data
+                                train_q1, train_q3 = X[feature].quantile([0.25, 0.75])
+                                train_iqr = train_q3 - train_q1
+                                train_lower = train_q1 - 1.5 * train_iqr
+                                train_upper = train_q3 + 1.5 * train_iqr
+                                
+                                outliers = X_new[(X_new[feature] < train_lower) | (X_new[feature] > train_upper)]
+                                if len(outliers) > 0:
+                                    outlier_features.append(f"{feature}: {len(outliers)} outliers")
                         
+                        if outlier_features:
+                            st.warning("**Potential outliers detected:**")
+                            for outlier_info in outlier_features:
+                                st.write(f"- {outlier_info}")
+                        else:
+                            st.success("**No significant outliers detected**")
+
+                    # Feature distribution comparison chart
+                    st.subheader("Feature Distributions Comparison")
+
+                    # Select a few key features to compare
+                    key_features = []
+                    if 'Age' in X_new.columns:
+                        key_features.append('Age')
+                    if 'Total Credit Taken' in X_new.columns:
+                        key_features.append('Total Credit Taken')
+                    if 'Has_Meal_Plan' in X_new.columns:
+                        key_features.append('Has_Meal_Plan')
+                    if 'Student Type' in X_new.columns:
+                        key_features.append('Student Type')
+
+                    # Limit to first 4 features to avoid overcrowding
+                    key_features = key_features[:4]
+
+                    if key_features:
+                        fig, axes = plt.subplots(1, len(key_features), figsize=(4*len(key_features), 5))
+                        if len(key_features) == 1:
+                            axes = [axes]
+                        
+                        for idx, feature in enumerate(key_features):
+                            ax = axes[idx]
+                            
+                            if X_new[feature].dtype in ['object', 'category'] or X_new[feature].nunique() < 10:
+                                # Categorical feature - bar chart
+                                pred_counts = X_new[feature].value_counts()
+                                train_counts = X[feature].value_counts() if feature in X.columns else pred_counts
+                                
+                                categories = pred_counts.index
+                                pred_pcts = (pred_counts / len(X_new) * 100)
+                                train_pcts = (train_counts / len(X) * 100) if feature in X.columns else pred_pcts
+                                
+                                x = range(len(categories))
+                                width = 0.35
+                                
+                                ax.bar([i - width/2 for i in x], pred_pcts, width, label='Your Data', color='#800020', alpha=0.8)
+                                if feature in X.columns:
+                                    ax.bar([i + width/2 for i in x], train_pcts, width, label='Training Data', color='#FFD700', alpha=0.8)
+                                
+                                ax.set_xlabel(feature)
+                                ax.set_ylabel('Percentage')
+                                ax.set_xticks(x)
+                                ax.set_xticklabels(categories, rotation=45, ha='right')
+                                
+                            else:
+                                # Numeric feature - histogram
+                                ax.hist(X_new[feature], bins=20, alpha=0.7, label='Your Data', color='#800020', density=True)
+                                if feature in X.columns:
+                                    ax.hist(X[feature], bins=20, alpha=0.5, label='Training Data', color='#FFD700', density=True)
+                                ax.set_xlabel(feature)
+                                ax.set_ylabel('Density')
+                            
+                            ax.legend()
+                            ax.set_title(f'{feature} Distribution')
+                            ax.grid(True, alpha=0.3)
+                        
+                        plt.tight_layout()
                         st.pyplot(fig)
+
+                    # Summary insights
+                    st.subheader("Key Insights")
+
+                    insights = []
+
+                    # Age comparison
+                    if 'Age' in X_new.columns and 'Age' in X.columns:
+                        pred_age_avg = X_new['Age'].mean()
+                        train_age_avg = X['Age'].mean()
+                        age_diff = pred_age_avg - train_age_avg
+                        if abs(age_diff) > 0.5:
+                            direction = "older" if age_diff > 0 else "younger"
+                            insights.append(f"Your students are on average {abs(age_diff):.1f} years {direction} than the training data")
+
+                    # Housing prediction rate
+                    housing_rate = predictions.mean()
+                    if housing_rate > 0.3:
+                        insights.append(f"High housing demand: {housing_rate:.1%} of students predicted to need housing")
+                    elif housing_rate < 0.1:
+                        insights.append(f"Low housing demand: Only {housing_rate:.1%} of students predicted to need housing")
+                    else:
+                        insights.append(f"Moderate housing demand: {housing_rate:.1%} of students predicted to need housing")
+
+                    # Feature coverage
+                    feature_coverage = len(set(X_new.columns) & set(X.columns)) / len(X.columns)
+                    if feature_coverage < 0.8:
+                        insights.append(f"Limited feature overlap: Only {feature_coverage:.1%} of training features present in your data")
+
+                    if insights:
+                        for insight in insights:
+                            st.write(f"• {insight}")
+                    else:
+                        st.write("• Your prediction dataset appears similar to the training data characteristics")
                     
                     # Download - ensure proper string formatting in CSV
                     csv_results = results_df.copy()
@@ -538,10 +660,3 @@ elif page == "Make Predictions":
             st.info("Upload a CSV file to make predictions")
     else:
         st.error("Model not available")
-
-# Sidebar
-#st.sidebar.markdown("---")
-#if rf_model is not None:
-    #st.sidebar.info(f"Designed by: IR Team")
-#else:
-  #  st.sidebar.error("Model Not Available")
