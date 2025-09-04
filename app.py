@@ -644,8 +644,9 @@ elif page == "Make Predictions":
                     st.markdown('<h3 class="section-header">Confidence Range</h3>', unsafe_allow_html=True)
 
                     # Calculate confidence interval based on 90% accuracy
-                    lower_bound = int(has_housing * 0.9)
-                    upper_bound = int(has_housing * 1.1)
+                    # Precision/Recall based confidence range
+                    lower_bound = int(has_housing * 0.66)  # True positives (66% precision)
+                    upper_bound = int(has_housing * 1.10)  # Total need estimate (0.66/0.60 = 1.10)
 
                     st.info(f"""
                     **Predicted Students Needing Housing:** {has_housing:,}
