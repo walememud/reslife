@@ -581,7 +581,7 @@ elif page == "Make Predictions":
                                 x = range(len(categories))
                                 width = 0.35
                                 
-                                ax.bar([i - width/2 for i in x], pred_pcts, width, label='Your Data', color='#800020', alpha=0.8)
+                                ax.bar([i - width/2 for i in x], pred_pcts, width, label='Current Year', color='#800020', alpha=0.8)
                                 if feature in X.columns:
                                     ax.bar([i + width/2 for i in x], train_pcts, width, label='Training Data', color='#FFD700', alpha=0.8)
                                 
