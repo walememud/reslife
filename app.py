@@ -619,6 +619,10 @@ elif page == "Make Predictions":
                             direction = "older" if age_diff > 0 else "younger"
                             insights.append(f"Your students are on average {abs(age_diff):.1f} years {direction} than the training data")
 
+
+                    # Extract year from term and add 1
+                    current_year = int(str(term)[:4])  # Get first 4 digits of term
+                    prediction_year = current_year + 1
                     # Housing prediction rate
                     housing_rate = predictions.mean()
                     if housing_rate > 0.3:
@@ -626,7 +630,7 @@ elif page == "Make Predictions":
                     elif housing_rate < 0.1:
                         insights.append(f"Low housing demand: Only {housing_rate:.1%} of students predicted to need housing")
                     else:
-                        insights.append(f"Housing demand rate: {housing_rate:.1%} of continuing students predicted to need housing (historical average 2018-2023: 16.5%) ")
+                        insights.append(f"Housing demand rate: {housing_rate:.1%} of continuing students predicted to need housing in {prediction_year} (historical average 2018-2023: 16.5%) ")
                     
 
                     # Feature coverage
