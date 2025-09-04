@@ -535,39 +535,6 @@ elif page == "Make Predictions":
                         
                         plt.tight_layout()
                         st.pyplot(fig)
-                        
-                        # Summary table
-                        col1, col2 = st.columns(2)
-                        
-                        with col1:
-                            st.subheader("Cohort Summary")
-                            cohort_summary = pd.DataFrame({
-                                'Cohort Year': cohort_counts.index,
-                                'Students': cohort_counts.values,
-                                'Percentage': cohort_percentages.values
-                            })
-                            cohort_summary['Percentage'] = cohort_summary['Percentage'].apply(lambda x: f"{x}%")
-                            st.dataframe(cohort_summary, use_container_width=True, hide_index=True)
-                        
-                        with col2:
-                            st.subheader("Key Insights")
-                            
-                            # Find dominant cohorts
-                            top_cohort = cohort_counts.idxmax()
-                            top_cohort_pct = cohort_percentages.max()
-                            
-                            # Calculate years in school for prediction year
-                            years_in_school = prediction_year - top_cohort
-                            
-                            insights = [
-                                f"**Largest group:** {top_cohort} cohort ({top_cohort_pct}% of housing predictions)",
-                                f"**Academic standing:** Most will be {years_in_school}-year students in {prediction_year}",
-                                f"**Cohort range:** {cohort_counts.index.min()} to {cohort_counts.index.max()}",
-                                f"**Total cohorts:** {len(cohort_counts)} different cohort years"
-                            ]
-                            
-                            for insight in insights:
-                                st.write(f"• {insight}")
                     
                     elif 'COHORT_YEAR' not in df_new.columns:
                         st.warning("⚠️ COHORT_YEAR column not found in uploaded data. Cannot display cohort distribution.")
